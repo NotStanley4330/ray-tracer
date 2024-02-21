@@ -101,6 +101,10 @@ private:
 
 };
 
+#define DEFAULT_WIDTH = 512;
+#define DEFAULT_HEIGHT = 512;
+#define DEFAULT_MAX_COLOR = 255;
+
 void importScene();
 
 camera myCamera;
@@ -110,6 +114,8 @@ using namespace std;
 int main()
 {
     importScene();
+
+
 
 
 
