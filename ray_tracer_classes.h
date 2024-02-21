@@ -91,14 +91,12 @@ vec3 subtractVec3(vec3 first, vec3 second)
 
 struct camera
 {
-    vec3 lookAt;
-    vec3 lookFrom;
-    vec3 lookUp;
-    float fov;
 
-    vec3 position;
+
+    vec3 pos;
     vec3 relLookAt;
     float focal_length;
+    float fov;
     vec3 forward;
     vec3 up;
     vec3 right;
@@ -106,25 +104,47 @@ struct camera
 
     camera()
     {
-        lookAt = vec3(0.0,0.0,0.0);
-        lookFrom = vec3(0.0, 0.0, 1.0);
-        lookUp = vec3(0.0,1.0,0.0);
-        fov = 90.0;
+        vec3 lookAt = vec3(0.0,0.0,0.0);
+        vec3 lookFrom = vec3(0.0, 0.0, 1.0);
+        vec3 lookUp = vec3(0.0,1.0,0.0);
 
-        //need to add these calculations to the non-default constructor
-        position = lookFrom;
+
+        fov = 90;
+        pos = lookFrom;
         relLookAt = subtractVec3(lookAt, lookFrom);
 
-        //focal length is just the square root of the magnitude of the relLookAt vector
+        //focal length is just the square root of the dot product of the relLookAt vector
         focal_length = relLookAt.magnitude();
 
         //forward is the normalized form of rel look at
         forward = relLookAt.normalized();
         up = lookUp;
 
+        //right vector is the cross product of the forward and up vectors
+        right = forward.cross(up);
 
 
 
+
+
+    }
+
+    camera(vec3 lookAtIn, vec3 lookFromIn, vec3 lookUpIn, float fovIn)
+    {
+        fov = fovIn;
+        //set pos as lookFrom
+        pos = lookFromIn;
+        relLookAt = subtractVec3(lookAtIn, pos);
+
+        //focal length = sqrt(magnitude(relLookAt))
+        focal_length = relLookAt.magnitude();
+
+        //forward is the normalized form of rel look at
+        forward = relLookAt.normalized();
+        up = lookUpIn;
+
+        //right vector is the cross product of forward and up
+        right = forward.cross(up);
 
     }
 };
