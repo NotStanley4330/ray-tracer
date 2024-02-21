@@ -4,7 +4,7 @@
 
 #ifndef RAY_TRACER_RAY_TRACER_CLASSES_H
 #define RAY_TRACER_RAY_TRACER_CLASSES_H
-
+#include <cmath>
 
 class vec3
 {
@@ -28,7 +28,66 @@ public:
         y = yIn;
         z = zIn;
     }
+
+    //this function simply returns the dot product of this vector with another one
+    float dot(vec3 other)
+    {
+        return (float)((x * other.x) + (y * other.y) + (z * other.z));
+    }
+
+    //returns the scalar length of the vector
+    float magnitude()
+    {
+        vec3 copy = *this;
+        return sqrtf(dot(copy));
+    }
+
+    //returns a version of this vector with each element divided by a floating point value
+    vec3 divide(float divisor)
+    {
+        return {(x / divisor), (y / divisor), (z / divisor)};
+    }
+
+    //returns a new vector pointing in the same direction but with length 1
+    vec3 normalized()
+    {
+        float mag = magnitude();
+        if (mag != 0)
+        {
+            return divide(mag);
+        }
+        else
+        {
+            return *this;
+        }
+    }
+
+    //returns a cross product of this vector with another one
+    vec3 cross(vec3 other)
+    {
+        //first, we need to do (this.y * other.z) - (this.z * other.y)
+        float xResult = (y * other.z) - (other.y * z);
+        //next, we need to do (this.x * other.z) - (this.z * other.x)
+        float yResult = (x * other.z) - (z * other.x);
+        //last, we need to do (this.x * other.y) - (this.y * other.x)
+        float zResult = (x * other.y) - (y * other.x);
+        return {xResult, yResult, zResult};
+    }
 };
+
+//this function exists to subtract the elements of vec3s from one another
+//The second vec3 will be subtracted from the first
+vec3 subtractVec3(vec3 first, vec3 second)
+{
+    vec3 result;
+    result.x = first.x - second.x;
+    result.y = first.y - second.y;
+    result.z = first.z - second.z;
+
+    return result;
+}
+
+
 
 struct camera
 {
@@ -37,12 +96,36 @@ struct camera
     vec3 lookUp;
     float fov;
 
+    vec3 position;
+    vec3 relLookAt;
+    float focal_length;
+    vec3 forward;
+    vec3 up;
+    vec3 right;
+
+
     camera()
     {
         lookAt = vec3(0.0,0.0,0.0);
-        lookFrom = vec3(0.0, 0.0, 0.0);
-        lookUp = vec3(0.0,0.0,0.0);
+        lookFrom = vec3(0.0, 0.0, 1.0);
+        lookUp = vec3(0.0,1.0,0.0);
         fov = 90.0;
+
+        //need to add these calculations to the non-default constructor
+        position = lookFrom;
+        relLookAt = subtractVec3(lookAt, lookFrom);
+
+        //focal length is just the square root of the magnitude of the relLookAt vector
+        focal_length = relLookAt.magnitude();
+
+        //forward is the normalized form of rel look at
+        forward = relLookAt.normalized();
+        up = lookUp;
+
+
+
+
+
     }
 };
 

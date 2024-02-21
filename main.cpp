@@ -15,6 +15,7 @@ using namespace std;
 int main()
 {
     ImportScene(myCamera, sceneInfo);
+    cout << "Scene Imported!!" << endl;
 
 
 
