@@ -5,4 +5,5 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ray_tracer main.cpp
         ray_tracer_classes.h
-        ray_tracer_classes.h)
+        ray_tracer_classes.h
+        scene_importer.h)
