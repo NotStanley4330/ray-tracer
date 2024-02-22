@@ -29,3 +29,4 @@ void outputToFile(vec3** colorData, int width, int height, int maxColors)
 
     cout << "PPM file successfully written!" << endl;
 }
+

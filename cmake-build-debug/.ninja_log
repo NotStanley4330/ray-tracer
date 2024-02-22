@@ -11,3 +11,14 @@
 505	603	7302815045247358	ray_tracer.exe	d546991f7c6013f2
 3	419	7302815323790370	CMakeFiles/ray_tracer.dir/file_output.cpp.obj	c49df27c79e6c684
 420	512	7302815324679197	ray_tracer.exe	d546991f7c6013f2
+12	779	7302830288331024	CMakeFiles/ray_tracer.dir/file_output.cpp.obj	c49df27c79e6c684
+7	798	7302830288803059	CMakeFiles/ray_tracer.dir/ray_trace.cpp.obj	4e4a614e29128a08
+3	802	7302830288859303	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
+802	919	7302830289985781	ray_tracer.exe	d546991f7c6013f2
+5	561	7302830950562171	CMakeFiles/ray_tracer.dir/ray_trace.cpp.obj	4e4a614e29128a08
+562	652	7302830951430388	ray_tracer.exe	d546991f7c6013f2
+15	353	7302837687649590	CMakeFiles/ray_tracer.dir/ray_tracer_classes.cpp.obj	391a4b6c3b8f13f8
+20	610	7302837690225700	CMakeFiles/ray_tracer.dir/file_output.cpp.obj	c49df27c79e6c684
+4	627	7302837690407639	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
+10	707	7302837691187801	CMakeFiles/ray_tracer.dir/ray_trace.cpp.obj	4e4a614e29128a08
+707	840	7302837692444146	ray_tracer.exe	d546991f7c6013f2

@@ -73,6 +73,17 @@ public:
         float zResult = (x * other.y) - (y * other.x);
         return {xResult, yResult, zResult};
     }
+
+    vec3 multiplyScalar(float scalar)
+    {
+        return {x * scalar, y * scalar, z *scalar};
+    }
+
+    //adds a second vec3 and outputs the sum vec3
+    vec3 add(vec3 other)
+    {
+        return {x + other.x, y + other.y, z + other.z};
+    }
 };
 
 vec3 SubtractVec3(vec3 first, vec3 second);

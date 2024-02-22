@@ -46,7 +46,7 @@ int main()
     {
         imageArray[x] = new vec3[height];
     }
-    rayTraceAll(imageArray, width, height, windowViewportSizeRatio, halfWindowSize);
+    rayTraceAll(imageArray, myCamera, sceneInfo, width, height, windowViewportSizeRatio, halfWindowSize);
 
     outputToFile(imageArray, width, height, 255);
     cout << "Hello, World!" << endl;
