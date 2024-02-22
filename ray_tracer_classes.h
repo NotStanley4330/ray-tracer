@@ -75,19 +75,7 @@ public:
     }
 };
 
-//this function exists to subtract the elements of vec3s from one another
-//The second vec3 will be subtracted from the first
-vec3 subtractVec3(vec3 first, vec3 second)
-{
-    vec3 result;
-    result.x = first.x - second.x;
-    result.y = first.y - second.y;
-    result.z = first.z - second.z;
-
-    return result;
-}
-
-
+vec3 SubtractVec3(vec3 first, vec3 second);
 
 struct camera
 {
@@ -111,7 +99,7 @@ struct camera
 
         fov = 90;
         pos = lookFrom;
-        relLookAt = subtractVec3(lookAt, lookFrom);
+        relLookAt = SubtractVec3(lookAt, lookFrom);
 
         //focal length is just the square root of the dot product of the relLookAt vector
         focal_length = relLookAt.magnitude();
@@ -134,7 +122,7 @@ struct camera
         fov = fovIn;
         //set pos as lookFrom
         pos = lookFromIn;
-        relLookAt = subtractVec3(lookAtIn, pos);
+        relLookAt = SubtractVec3(lookAtIn, pos);
 
         //focal length = sqrt(magnitude(relLookAt))
         focal_length = relLookAt.magnitude();

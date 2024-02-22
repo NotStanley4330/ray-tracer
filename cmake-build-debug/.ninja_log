@@ -1,9 +1,8 @@
 # ninja log v5
-5	817	7302378997924771	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
-818	1178	7302379001475167	ray_tracer.exe	86a44045f8e96ea0
-4	714	7302395639077902	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
-715	877	7302395640669086	ray_tracer.exe	86a44045f8e96ea0
-3	367	7302426504026041	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
-367	469	7302426505017331	ray_tracer.exe	86a44045f8e96ea0
-5	903	7302497298163112	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
-904	1062	7302497299693158	ray_tracer.exe	86a44045f8e96ea0
+3	418	7302664961419004	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
+457	540	7302583424325846	ray_tracer.exe	d4618f438ea3dc43
+8	359	7302663954475709	CMakeFiles/ray_tracer.dir/ray_trace.cpp.obj	4e4a614e29128a08
+20	205	7302666625409987	CMakeFiles/ray_tracer.dir/ray_trace.cpp.obj	4e4a614e29128a08
+13	213	7302666625490281	CMakeFiles/ray_tracer.dir/ray_tracer_classes.cpp.obj	391a4b6c3b8f13f8
+5	509	7302666628439590	CMakeFiles/ray_tracer.dir/main.cpp.obj	e0127a23faa4f351
+509	617	7302666629462465	ray_tracer.exe	4e952b964c5b86f9
