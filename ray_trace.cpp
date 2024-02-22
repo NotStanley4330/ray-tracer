@@ -46,31 +46,35 @@ vec3 rayTracePixel(int x, int y, double winViewRatio[], float halfWinSize[])
     vec3 relWorldPoint = windowToRelWorld(windowPointVec);
     cout << "transforms done!" << endl;
     //for now lets just assign random pixel values so that we can make sure the file works
-//    random_device rd;
-//    mt19937 gen(rd());
-//    uniform_real_distribution<float> dist(0.0f, 1.0f);
-//    float randFloat = dist(gen);
-//    float randFloat2 = dist(gen);
-//    float randFloat3 = dist(gen);
-//
-//    //don't ever do this
-//    return {randFloat,randFloat2,randFloat3};
+    //send out the rays!
+    return getColor(sceneCamera.pos, relWorldPoint.normalized());
 
     return {0.0,0.0,0.0};
 }
 
-void viewportToWindow(float windowPoint[], int viewPoint[], double winViewRatio[], float halfWinSize[])
+
+//this is the function that actually sends out the ray and returns the vec3 color value
+vec3 getColor(vec3 origin, vec3 direction)
 {
-    //TODO: remove this debug code eventually
-//    cout << "Window point: " << windowPoint[0] << ", " << windowPoint[1] << endl;
-//    cout << "View point: " << viewPoint[0] << ", " << viewPoint[1] << endl;
-//    cout << "win view ratio: " << winViewRatio[0] << ", " << winViewRatio[1] << endl;
-//    cout << "Half win size: " << halfWinSize[0] << ", " << halfWinSize[1] << endl;
+    Ray pixelRay(origin, direction);
+    RayCollision collision = pixelRay.castRay(myScene);
+
+    //shade the pixel with the sphere if we have a sphere collision
+    if (collision.hasCollision)
+    {
+        cout << "Ray at " << origin.x << ", " << origin.y << ", " << origin.z << endl;
+        cout << "Collided with sphere at: " << collision.collidedSphere.center.x << ", " << collision.collidedSphere.center.y;
+        cout << ", " << collision.collidedSphere.center.z << endl;
+        vec3 viewDir = direction.multiplyScalar(-1.0);
+    }
+    return {0.1,0.1,0.1};
+}
+
+//transpform the viewport coords to window ones
+void viewportToWindow(float windowPoint[], const int viewPoint[], const double winViewRatio[], const float halfWinSize[])
+{
     windowPoint[0] = float(((double)viewPoint[0] * winViewRatio[0]) - halfWinSize[0]);
     windowPoint[1] = float(((double)viewPoint[1] * winViewRatio[1]) - halfWinSize[1]);
-
-
-    //cout << "I wanna make sure this works" << endl;
 }
 
 //this function transforms the window point to a relative world point

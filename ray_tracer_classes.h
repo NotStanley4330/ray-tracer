@@ -172,6 +172,54 @@ public:
 
     }
 
+    vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided)
+    {
+        vec3 distance = SubtractVec3(center, rayOrigin);
+        float distSqr = distance.dot(distance);
+        float distMag = sqrtf(distSqr);
+
+        bool outside = (distMag >= radius);
+
+        //need the dot product of the ray direction and the distance
+        double closestApproach = (double)rayDirection.dot(distance);
+
+        if(closestApproach < 0 && outside)
+        {
+            isCollided = false;
+            return {0.0,0.0,0.0};
+        }
+
+        double closestApproachDistSurfaceSqr = pow((double)radius, (double)2) - (double)distSqr +
+                                              pow(closestApproach, 2);
+
+        if (closestApproachDistSurfaceSqr < 0)
+        {
+            isCollided = false;
+            return {0.0,0.0,0.0};
+        }
+
+        double closestApproachDistSurface = sqrt(closestApproachDistSurfaceSqr);
+
+        double t;
+        if (outside)
+        {
+            t = closestApproach - closestApproachDistSurface;
+        }
+        else
+        {
+            t = closestApproach + closestApproachDistSurface;
+        }
+
+        //set isCollided to true and return the collidedPosition
+        isCollided = true;
+        return rayOrigin.add(rayDirection.multiplyScalar((float)t));
+
+
+
+    }
+
+
+
 
 };
 
@@ -183,6 +231,7 @@ public:
     vec3 ambientLight;
     vec3 backgroundColor;
     sphere sphereList[10];
+    int numSpheres;
 
     scene()
     {
@@ -199,11 +248,69 @@ public:
         sphereList[numSpheres] = inputSphere;
         numSpheres++;
     }
+};
 
-private:
-    int numSpheres;
+class RayCollision
+{
+public:
+    sphere collidedSphere;
+    vec3 rayOrigin;
+    vec3 pos; //position of the collision
+    float distance; // the distance between the ray origin and this collision
+    bool hasCollision;//A bool to check if there is an actual collision associated
 
+    RayCollision(sphere inSphere, vec3 rayOrignIn, vec3 collidePos)
+    {
+        collidedSphere = inSphere;
+        rayOrigin = rayOrignIn;
+        pos = collidePos;
+        vec3 difPosOrigin = SubtractVec3(pos, rayOrigin);
+        distance = difPosOrigin.magnitude();
+        hasCollision = true;
+    }
 
+    RayCollision()
+    {
+        distance = 100000;
+        hasCollision = false;
+    }
+};
+
+class Ray
+{
+public:
+    vec3 origin;
+    vec3 direction;
+
+    Ray(vec3 originIn, vec3 directionIn)
+    {
+        origin = originIn;
+        direction = directionIn;
+    }
+
+    RayCollision castRay(scene sceneInfo)
+    {
+        RayCollision closestCollide;
+        for (int x = 0; x < sceneInfo.numSpheres; x++)
+        {
+            //create a bool to check if we really collide with the sphere and do the collision detection
+            bool collided = false;
+            vec3 collisionPos = sceneInfo.sphereList[x].collideRay(origin, direction, collided);
+            if(collided)
+            {
+                RayCollision collision(sceneInfo.sphereList[x],origin,collisionPos);
+
+                //if there is no initial collision or if the distance to this collision is closer, set this collision
+                //as the closest one
+                if (!closestCollide.hasCollision || collision.distance < closestCollide.distance)
+                {
+                    closestCollide = collision;
+                }
+            }
+        }
+
+        return closestCollide;
+    }
 
 };
 
