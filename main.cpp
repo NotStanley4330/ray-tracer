@@ -38,6 +38,9 @@ int main()
     CalculateWindowViewportRatio(windowSize, viewportSize, windowViewportSizeRatio);
     float halfWindowSize[2] = {(float)windowSize[0] / 2, (float)windowSize[1] / 2};
 
+    //now we create an array to store all the color data and start ray tracing
+    vec3 imageArray[width][height];
+
 
 
 

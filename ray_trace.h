@@ -7,7 +7,7 @@
 #ifndef RAY_TRACER_RAY_TRACE_H
 #define RAY_TRACER_RAY_TRACE_H
 
-
+void ray_trace_all(int [], int, int, double [], float);
 
 
 
