@@ -84,6 +84,45 @@ public:
     {
         return {x + other.x, y + other.y, z + other.z};
     }
+
+    vec3 multiplyVecs(vec3 other)
+    {
+        return{x * other.x, y * other.y, z * other.z};
+    }
+
+    //this functions serves to clip vec3 values to 0,1 for color output
+    vec3 clip()
+    {
+        vec3 clippedVec = *this;
+        if (x > 1.0)
+        {
+            clippedVec.x = 1.0;
+        }
+        else if (x < 0.0)
+        {
+            clippedVec.x = 0.0;
+        }
+
+        if (y > 1.0)
+        {
+            clippedVec.y = 1.0;
+        }
+        else if (y < 0.0)
+        {
+            clippedVec.y = 0.0;
+        }
+
+        if (z > 1.0)
+        {
+            clippedVec.z = 1.0;
+        }
+        else if (z < 0.0)
+        {
+            clippedVec.z = 0.0;
+        }
+
+        return clippedVec;
+    }
 };
 
 vec3 SubtractVec3(vec3 first, vec3 second);
@@ -153,23 +192,29 @@ class sphere
 public:
     vec3 center;
     float radius;
-    float Kd;
-    float Ks;
-    float Ka;
-    vec3 Od;
-    vec3 Os;
-    float Kgls;
+    float diffuseCoeff;
+    float specularCoeff;
+    float ambeintCoeff;
+    vec3 diffuseColor;
+    vec3 specularColor;
+    float glossCoeff;
     sphere()
     {
         center = vec3(0.0,0.0,0.0);
         radius = 0.0;
-        Kd = 0.0;
-        Ks = 0.0;
-        Ka = 0.0;
-        Od = vec3(0.0,0.0,0.0);
-        Os = vec3(0.0,0.0,0.0);
-        Kgls = 0.0;
+        diffuseCoeff = 0.0;
+        specularCoeff = 0.0;
+        ambeintCoeff = 0.0;
+        diffuseColor = vec3(0.0, 0.0, 0.0);
+        specularColor = vec3(0.0, 0.0, 0.0);
+        glossCoeff = 0.0;
 
+    }
+
+    vec3 getNormal(vec3 point)
+    {
+        vec3 diffPoints = SubtractVec3(point, center);
+        return diffPoints.normalized();
     }
 
     vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided)

@@ -5,6 +5,7 @@
 #include "ray_trace.h"
 #include <iostream>
 #include <random>
+#include <cmath>
 
 camera sceneCamera;
 scene myScene;
@@ -44,7 +45,7 @@ vec3 rayTracePixel(int x, int y, double winViewRatio[], float halfWinSize[])
     //need a 3d point for 3d space
     vec3 windowPointVec(windowPoint[0], (windowPoint[1]* -1), 0.0);
     vec3 relWorldPoint = windowToRelWorld(windowPointVec);
-    cout << "transforms done!" << endl;
+    //cout << "transforms done!" << endl;
     //for now lets just assign random pixel values so that we can make sure the file works
     //send out the rays!
     return getColor(sceneCamera.pos, relWorldPoint.normalized());
@@ -62,12 +63,14 @@ vec3 getColor(vec3 origin, vec3 direction)
     //shade the pixel with the sphere if we have a sphere collision
     if (collision.hasCollision)
     {
-        cout << "Ray at " << origin.x << ", " << origin.y << ", " << origin.z << endl;
-        cout << "Collided with sphere at: " << collision.collidedSphere.center.x << ", " << collision.collidedSphere.center.y;
-        cout << ", " << collision.collidedSphere.center.z << endl;
+//        cout << "Ray at " << origin.x << ", " << origin.y << ", " << origin.z << endl;
+//        cout << "Collided with sphere at: " << collision.collidedSphere.center.x << ", " << collision.collidedSphere.center.y;
+//        cout << ", " << collision.collidedSphere.center.z << endl;
         vec3 viewDir = direction.multiplyScalar(-1.0);
+        return shade(collision.collidedSphere, collision.pos, viewDir);
+
     }
-    return {0.1,0.1,0.1};
+    return myScene.backgroundColor;
 }
 
 //transpform the viewport coords to window ones
@@ -90,4 +93,44 @@ vec3 windowToRelWorld(vec3 windowPointVec)
     relWorld = relWorld.add(temp2);
     relWorld = relWorld.add(temp3);
     return relWorld;
+}
+
+//this function applies the phong shading
+vec3 shade(sphere mySphere, vec3 position, vec3 viewDir)
+{
+    //get surface normal
+    vec3 surfaceNormal = mySphere.getNormal(position);
+    float normalDotLight = surfaceNormal.dot(myScene.directionToLight);
+    //This equation should be 2 * surfaceNormal * normalDotLight - directionToLight
+    vec3 lightReflectionDirection = SubtractVec3(surfaceNormal.multiplyScalar(2).multiplyScalar(normalDotLight),
+                                                 myScene.directionToLight);
+    //viewdir dot lightReflectionDirection
+    float viewDotLight = viewDir.dot(lightReflectionDirection);
+
+    //ambient lighting
+    vec3 ambient = myScene.ambientLight.multiplyVecs(mySphere.diffuseColor);
+    ambient = ambient.multiplyScalar(mySphere.ambeintCoeff);
+
+    //Diffuse lighting
+    //equation is lightColor * obj.diffuseColor * max of 0 and normalDotLight
+    vec3 diffuse = myScene.lightColor.multiplyVecs(mySphere.diffuseColor)
+            .multiplyScalar(max((float)0.0, normalDotLight));
+    diffuse = diffuse.multiplyScalar(mySphere.diffuseCoeff);
+
+    //Specular lighting
+    //This equation is lightColor * obj.specularColor * (max of 0.0, and viewDotLight)^obj.glossCoeff
+    vec3 specular = myScene.lightColor.multiplyVecs(mySphere.specularColor)
+            .multiplyScalar(pow(max((float)0.0, viewDotLight),mySphere.glossCoeff));
+    specular = specular.multiplyScalar(mySphere.specularCoeff);
+
+    //color = ambient + diffuse + specular
+    vec3 color = ambient.add(diffuse).add(specular);
+
+    //clip the dang values
+    vec3 colorClipped = color.clip();
+
+    return colorClipped;
+
+
+
 }

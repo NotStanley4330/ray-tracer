@@ -51,7 +51,7 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
 
     //read in BackgroundColor
     fin >> garbage >> inOne >> inTwo >> inThree;
-    sceneInfo.ambientLight = vec3(stof(inOne), stof(inTwo), stof(inThree));
+    sceneInfo.backgroundColor = vec3(stof(inOne), stof(inTwo), stof(inThree));
 
     //read in objects loop
     while(fin.peek() != EOF)
@@ -77,27 +77,27 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
 
             //read in Kd
             fin >> garbage >> inOne;
-            inputSphere.Kd = stof(inOne);
+            inputSphere.diffuseCoeff = stof(inOne);
 
             //read in Ks
             fin >> garbage >> inOne;
-            inputSphere.Ks = stof(inOne);
+            inputSphere.specularCoeff = stof(inOne);
 
             //read in Ka
             fin >> garbage >> inOne;
-            inputSphere.Ka = stof(inOne);
+            inputSphere.ambeintCoeff = stof(inOne);
 
             //read in Od
             fin >> garbage >> inOne >> inTwo >> inThree;
-            inputSphere.Od = vec3(stof(inOne), stof(inTwo), stof(inThree));
+            inputSphere.diffuseColor = vec3(stof(inOne), stof(inTwo), stof(inThree));
 
             //read in Od
             fin >> garbage >> inOne >> inTwo >> inThree;
-            inputSphere.Os = vec3(stof(inOne), stof(inTwo), stof(inThree));
+            inputSphere.specularColor = vec3(stof(inOne), stof(inTwo), stof(inThree));
 
             //read in Kgls
             fin >> garbage >> inOne;
-            inputSphere.Kgls = stof(inOne);
+            inputSphere.glossCoeff = stof(inOne);
 
             sceneInfo.addSphere(inputSphere);
 
