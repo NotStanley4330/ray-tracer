@@ -2,6 +2,7 @@
 #include <cmath>
 #include "ray_trace.h"
 #include "scene_importer.h"
+#include "file_output.h"
 
 
 
@@ -39,12 +40,15 @@ int main()
     float halfWindowSize[2] = {(float)windowSize[0] / 2, (float)windowSize[1] / 2};
 
     //now we create an array to store all the color data and start ray tracing
-    vec3 imageArray[width][height];
+    //we need to do this as a pointer for a proper 2d array to be passed arround
+    vec3** imageArray = new vec3*[width];
+    for (int x = 0; x < width; x++)
+    {
+        imageArray[x] = new vec3[height];
+    }
+    rayTraceAll(imageArray, width, height, windowViewportSizeRatio, halfWindowSize);
 
-
-
-
-
+    outputToFile(imageArray, width, height, 255);
     cout << "Hello, World!" << endl;
     return 0;
 }

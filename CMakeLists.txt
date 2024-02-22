@@ -9,4 +9,6 @@ add_executable(ray_tracer main.cpp
         scene_importer.h
         ray_trace.h
         ray_trace.cpp
-        ray_tracer_classes.cpp)
+        ray_tracer_classes.cpp
+        file_output.h
+        file_output.cpp)

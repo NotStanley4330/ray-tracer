@@ -67,6 +67,12 @@ build CMakeFiles/ray_tracer.dir/ray_tracer_classes.cpp.obj: CXX_COMPILER__ray_tr
   OBJECT_DIR = CMakeFiles\ray_tracer.dir
   OBJECT_FILE_DIR = CMakeFiles\ray_tracer.dir
 
+build CMakeFiles/ray_tracer.dir/file_output.cpp.obj: CXX_COMPILER__ray_tracer_unscanned_Debug C$:/Users/starw/CLionProjects/ray_tracer/file_output.cpp || cmake_object_order_depends_target_ray_tracer
+  DEP_FILE = CMakeFiles\ray_tracer.dir\file_output.cpp.obj.d
+  FLAGS = -g -fdiagnostics-color=always
+  OBJECT_DIR = CMakeFiles\ray_tracer.dir
+  OBJECT_FILE_DIR = CMakeFiles\ray_tracer.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target ray_tracer
@@ -75,7 +81,7 @@ build CMakeFiles/ray_tracer.dir/ray_tracer_classes.cpp.obj: CXX_COMPILER__ray_tr
 #############################################
 # Link the executable ray_tracer.exe
 
-build ray_tracer.exe: CXX_EXECUTABLE_LINKER__ray_tracer_Debug CMakeFiles/ray_tracer.dir/main.cpp.obj CMakeFiles/ray_tracer.dir/ray_trace.cpp.obj CMakeFiles/ray_tracer.dir/ray_tracer_classes.cpp.obj
+build ray_tracer.exe: CXX_EXECUTABLE_LINKER__ray_tracer_Debug CMakeFiles/ray_tracer.dir/main.cpp.obj CMakeFiles/ray_tracer.dir/ray_trace.cpp.obj CMakeFiles/ray_tracer.dir/ray_tracer_classes.cpp.obj CMakeFiles/ray_tracer.dir/file_output.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\ray_tracer.dir

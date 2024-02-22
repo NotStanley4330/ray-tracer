@@ -7,9 +7,11 @@
 #ifndef RAY_TRACER_RAY_TRACE_H
 #define RAY_TRACER_RAY_TRACE_H
 
-void ray_trace_all(int [], int, int, double [], float);
+void rayTraceAll(vec3**, int, int, double [], float[]);
 
+vec3 rayTracePixel(int, int, double[], float[]);
 
+void viewportToWindow(float[], int [], double[], float[]);
 
 
 
