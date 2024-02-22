@@ -49,7 +49,7 @@ int main()
     rayTraceAll(imageArray, myCamera, sceneInfo, width, height, windowViewportSizeRatio, halfWindowSize);
 
     outputToFile(imageArray, width, height, 255);
-    cout << "Hello, World!" << endl;
+    cout << "Raytrace completed!" << endl;
     return 0;
 }
 
@@ -61,8 +61,8 @@ void CalculateWindowSize(int windowSize[2], const int viewportSize[2], float foc
     double x = focalLength * tan(degToRad) * 2;
     double y = x * viewportSize[1]/viewportSize[0];
     //now stick the window sizes back into the window size array
-    windowSize[0] = (int)x;
-    windowSize[1] = (int)y;
+    windowSize[0] = (int)x * 2;
+    windowSize[1] = (int)y * 2 ;
 }
 
 double DegreesToRadians(double degreeNumber)

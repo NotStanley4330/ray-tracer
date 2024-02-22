@@ -12,7 +12,7 @@ using namespace std;
 void ImportScene(camera &myCamera, scene &sceneInfo)
 {
     fstream fin;
-    fin.open("C:\\Users\\starw\\CLionProjects\\ray_tracer\\scene2.txt", fstream::in);
+    fin.open("C:\\Users\\starw\\CLionProjects\\ray_tracer\\scene3.txt", fstream::in);
 
 
     //start reading in input, these are just throw away variables
@@ -97,7 +97,7 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
 
             //read in Kgls
             fin >> garbage >> inOne;
-            inputSphere.glossCoeff = stof(inOne);
+            inputSphere.glossCoeff = stof(inOne) * (float)0.1;
 
             sceneInfo.addSphere(inputSphere);
 
