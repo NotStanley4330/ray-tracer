@@ -71,12 +71,13 @@ vec3 getColor(vec3 origin, vec3 direction, float fade, int reflections)
 //        cout << "Collided with sphere at: " << collision.collidedSphere.center.x << ", " << collision.collidedSphere.center.y;
 //        cout << ", " << collision.collidedSphere.center.z << endl;
         vec3 viewDir = direction.multiplyScalar(-1.0);
-        vec3 objNormal = collision.collidedSphere.getNormal(collision.pos);
+        vec3 objNormal = collision.collidedSphere->getNormal(collision.pos);
         //lets offset this collision so we dont get trapped inside an object.
         //position += 0.01 * normal
         collision.pos = collision.pos.add(objNormal.multiplyScalar(0.01));
 
         bool inShadow = isInShadow(collision.pos);
+        inShadow = false;
         //ReflectionDirection = ray direction + ( -2 *normal * dot(pixelRay.direction, normal))
         vec3 reflectionDirection = pixelRay.direction.add(objNormal.multiplyScalar(
                 pixelRay.direction.dot(objNormal) * - 2.0f));
@@ -85,7 +86,7 @@ vec3 getColor(vec3 origin, vec3 direction, float fade, int reflections)
         vec3 offsetOrigin = collision.pos.add(reflectionDirection.multiplyScalar(0.01f));
 
         vec3 reflectedColor = getColor(offsetOrigin, reflectionDirection,
-                                       fade * collision.collidedSphere.reflectivity, reflections + 1);
+                                       fade * collision.collidedSphere->reflectivity, reflections + 1);
 
         return shade(collision.collidedSphere, collision.pos, viewDir, inShadow, reflectedColor);
 
@@ -129,7 +130,7 @@ vec3 windowToRelWorld(vec3 windowPointVec)
 }
 
 //this function applies the phong shading
-vec3 shade(sphere mySphere, vec3 position, vec3 viewDir, bool inShadow, vec3 reflectedColor)
+vec3 shade(object* mySphere, vec3 position, vec3 viewDir, bool inShadow, vec3 reflectedColor)
 {
     float shadowCoefficient;
     if (inShadow)
@@ -142,7 +143,7 @@ vec3 shade(sphere mySphere, vec3 position, vec3 viewDir, bool inShadow, vec3 ref
     }
 
     //get surface normal
-    vec3 surfaceNormal = mySphere.getNormal(position);
+    vec3 surfaceNormal = mySphere->getNormal(position);
     float normalDotLight = surfaceNormal.dot(myScene.directionToLight);
     //This equation should be 2 * surfaceNormal * normalDotLight - directionToLight
     vec3 lightReflectionDirection = SubtractVec3(surfaceNormal.multiplyScalar(2).multiplyScalar(normalDotLight),
@@ -151,25 +152,25 @@ vec3 shade(sphere mySphere, vec3 position, vec3 viewDir, bool inShadow, vec3 ref
     float viewDotLight = viewDir.dot(lightReflectionDirection);
 
     //Ambient lighting
-    vec3 ambient = myScene.ambientLight.multiplyVecs(mySphere.diffuseColor);
-    ambient = ambient.multiplyScalar(mySphere.ambeintCoeff);
+    vec3 ambient = myScene.ambientLight.multiplyVecs(mySphere->diffuseColor);
+    ambient = ambient.multiplyScalar(mySphere->ambeintCoeff);
 
     //Diffuse lighting
     //equation is lightColor * obj.diffuseColor * max of 0 and normalDotLight
-    vec3 diffuse = myScene.lightColor.multiplyVecs(mySphere.diffuseColor)
+    vec3 diffuse = myScene.lightColor.multiplyVecs(mySphere->diffuseColor)
             .multiplyScalar(max((float)0.0, normalDotLight));
-    diffuse = diffuse.multiplyScalar(mySphere.diffuseCoeff);
+    diffuse = diffuse.multiplyScalar(mySphere->diffuseCoeff);
     diffuse = diffuse.multiplyScalar(shadowCoefficient);
 
     //Specular lighting
     //This equation is lightColor * obj.specularColor * (max of 0.0, and viewDotLight)^obj.glossCoeff
-    vec3 specular = myScene.lightColor.multiplyVecs(mySphere.specularColor)
-            .multiplyScalar(pow(max((float)0.0, viewDotLight),mySphere.glossCoeff));
-    specular = specular.multiplyScalar(mySphere.specularCoeff);
+    vec3 specular = myScene.lightColor.multiplyVecs(mySphere->specularColor)
+            .multiplyScalar(pow(max((float)0.0, viewDotLight),mySphere->glossCoeff));
+    specular = specular.multiplyScalar(mySphere->specularCoeff);
     specular = specular.multiplyScalar(shadowCoefficient);
 
     //REFLECTIONS
-    vec3 reflectedObjColor = reflectedColor.multiplyScalar(mySphere.reflectivity);
+    vec3 reflectedObjColor = reflectedColor.multiplyScalar(mySphere->reflectivity);
 
     //color = ambient + diffuse + specular + reflected
     vec3 color = ambient.add(diffuse).add(specular).add(reflectedObjColor);
