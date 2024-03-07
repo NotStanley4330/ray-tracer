@@ -187,7 +187,30 @@ struct camera
     }
 };
 
-class sphere
+
+class object
+{
+public:
+    float diffuseCoeff;
+    float specularCoeff;
+    float ambeintCoeff;
+    vec3 diffuseColor;
+    vec3 specularColor;
+    float glossCoeff;
+    float reflectivity;
+
+    virtual vec3 getNormal(vec3 point)
+    {
+        return {0.0,0.0,0.0};
+    }
+    virtual vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided)
+    {
+        isCollided = false;
+        return {0.0,0.0,0.0};
+    }
+};
+
+class sphere : public object
 {
 public:
     vec3 center;
@@ -201,25 +224,39 @@ public:
     float reflectivity;
     sphere()
     {
-        center = vec3(0.0,0.0,0.0);
-        radius = 0.0;
-        diffuseCoeff = 0.0;
-        specularCoeff = 0.0;
-        ambeintCoeff = 0.0;
-        diffuseColor = vec3(0.0, 0.0, 0.0);
-        specularColor = vec3(0.0, 0.0, 0.0);
-        glossCoeff = 0.0;
-        reflectivity = 0.0;
+        this->center = vec3(0.0,0.0,0.0);
+        this->radius = 0.0;
+        this->diffuseCoeff = 0.0;
+        this->specularCoeff = 0.0;
+        this->ambeintCoeff = 0.0;
+        this->diffuseColor = vec3(0.0, 0.0, 0.0);
+        this->specularColor = vec3(0.0, 0.0, 0.0);
+        this->glossCoeff = 0.0;
+        this->reflectivity = 0.0;
 
     }
 
-    vec3 getNormal(vec3 point)
+    sphere(vec3 centerIn, float radiusIn, float diffIn, float specIn, float ambIn, vec3 diffColorIn, vec3 specColorIn,
+           float glossIn, float reflectIn)
+    {
+        this->center = centerIn;
+        this->radius = radiusIn;
+        this->diffuseCoeff = diffIn;
+        this->specularCoeff = specIn;
+        this->ambeintCoeff = ambIn;
+        this->diffuseColor = diffColorIn;
+        this->specularColor = specColorIn;
+        this->glossCoeff = glossIn;
+        this->reflectivity = reflectIn;
+    }
+
+    vec3 getNormal(vec3 point) override
     {
         vec3 diffPoints = SubtractVec3(point, center);
         return diffPoints.normalized();
     }
 
-    vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided)
+    vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided) override
     {
         vec3 distance = SubtractVec3(center, rayOrigin);
         float distSqr = distance.dot(distance);
@@ -270,6 +307,41 @@ public:
 
 };
 
+class polygon
+{
+public:
+    vec3 points[3];
+    float diffuseCoeff;
+    float specularCoeff;
+    float ambeintCoeff;
+    vec3 diffuseColor;
+    vec3 specularColor;
+    float glossCoeff;
+    float reflectivity;
+
+    polygon()
+    {
+        points[0] = vec3(0.0,0.0,0.0);
+        points[1] = vec3(0.0,1.0,0.0);
+        points[2] = vec3(1.0,0.0,0.0);
+        diffuseCoeff = 0.0;
+        specularCoeff = 0.0;
+        ambeintCoeff = 0.0;
+        diffuseColor = vec3(0.0, 0.0, 0.0);
+        specularColor = vec3(0.0, 0.0, 0.0);
+        glossCoeff = 0.0;
+        reflectivity = 0.0;
+    }
+
+    vec3 getNormal(vec3 point)
+    {
+        //we need to get two vectors of two sides and then take their cross products
+        vec3 vector1 = points[0].add(points[1].multiplyScalar(-1.0));
+        vec3 vector2 = points[1].add(points[2].multiplyScalar(-1));
+        return vector1.cross(vector2);
+    }
+};
+
 class scene
 {
 public:
@@ -277,8 +349,9 @@ public:
     vec3 lightColor;
     vec3 ambientLight;
     vec3 backgroundColor;
-    sphere sphereList[10];
+    object* sphereList[10];
     int numSpheres;
+
 
     scene()
     {
@@ -292,7 +365,7 @@ public:
     void addSphere(sphere inputSphere)
     {
         //set the sphere to given info and increment the number of spheres
-        sphereList[numSpheres] = inputSphere;
+        sphereList[numSpheres] = new sphere(inputSphere);
         numSpheres++;
     }
 };
@@ -300,13 +373,13 @@ public:
 class RayCollision
 {
 public:
-    sphere collidedSphere;
+    object* collidedSphere;
     vec3 rayOrigin;
     vec3 pos; //position of the collision
     float distance; // the distance between the ray origin and this collision
     bool hasCollision;//A bool to check if there is an actual collision associated
 
-    RayCollision(sphere inSphere, vec3 rayOrignIn, vec3 collidePos)
+    RayCollision(object* inSphere, vec3 rayOrignIn, vec3 collidePos)
     {
         collidedSphere = inSphere;
         rayOrigin = rayOrignIn;
@@ -342,7 +415,7 @@ public:
         {
             //create a bool to check if we really collide with the sphere and do the collision detection
             bool collided = false;
-            vec3 collisionPos = sceneInfo.sphereList[x].collideRay(origin, direction, collided);
+            vec3 collisionPos = sceneInfo.sphereList[x]->collideRay(origin, direction, collided);
             if(collided)
             {
                 RayCollision collision(sceneInfo.sphereList[x],origin,collisionPos);
