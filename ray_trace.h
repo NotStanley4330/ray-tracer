@@ -15,8 +15,10 @@ void viewportToWindow(float[], const int [], const double[], const float[]);
 
 vec3 windowToRelWorld(vec3);
 
-vec3 getColor(vec3, vec3);
-vec3 shade(sphere, vec3, vec3);
+vec3 getColor(vec3, vec3, float, int);
+vec3 shade(sphere, vec3, vec3, bool, vec3);
+
+bool isInShadow(vec3 point);
 
 
 #endif //RAY_TRACER_RAY_TRACE_H

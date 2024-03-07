@@ -99,6 +99,9 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
             fin >> garbage >> inOne;
             inputSphere.glossCoeff = stof(inOne) * (float)0.1;
 
+            fin >> garbage >> inOne;
+            inputSphere.reflectivity = stof(inOne);
+
             sceneInfo.addSphere(inputSphere);
 
         }

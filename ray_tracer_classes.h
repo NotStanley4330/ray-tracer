@@ -198,6 +198,7 @@ public:
     vec3 diffuseColor;
     vec3 specularColor;
     float glossCoeff;
+    float reflectivity;
     sphere()
     {
         center = vec3(0.0,0.0,0.0);
@@ -208,6 +209,7 @@ public:
         diffuseColor = vec3(0.0, 0.0, 0.0);
         specularColor = vec3(0.0, 0.0, 0.0);
         glossCoeff = 0.0;
+        reflectivity = 0.0;
 
     }
 

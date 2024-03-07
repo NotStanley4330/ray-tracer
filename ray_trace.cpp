@@ -7,6 +7,8 @@
 #include <random>
 #include <cmath>
 
+#define FADE_LIMIT 0.01
+
 camera sceneCamera;
 scene myScene;
 using namespace std;
@@ -23,11 +25,6 @@ void rayTraceAll(vec3** imageData, camera inputCamera, scene inputScene, int wid
     {
         for(int y = 0; y < height; y++)
         {
-            //TEST CODE TO MAKE SURE I AM EDITING THE STUPID ARRAY PROPERLY
-//            imageData[x][y].x = 1.0 * (float)y;
-//            imageData[x][y].y = 0.9 * (float)y;
-//            imageData[x][y].z = 0.8 * (float)y;
-
             //ray trace this pixel
             imageData[x][y] = rayTracePixel(x,y, windowViewportRatio, halfWindowSize);
         }
@@ -48,15 +45,22 @@ vec3 rayTracePixel(int x, int y, double winViewRatio[], float halfWinSize[])
     //cout << "transforms done!" << endl;
     //for now lets just assign random pixel values so that we can make sure the file works
     //send out the rays!
-    return getColor(sceneCamera.pos, relWorldPoint.normalized());
+    return getColor(sceneCamera.pos, relWorldPoint.normalized(), 1.0, 0);
 
     return {0.0,0.0,0.0};
 }
 
 
 //this is the function that actually sends out the ray and returns the vec3 color value
-vec3 getColor(vec3 origin, vec3 direction)
+vec3 getColor(vec3 origin, vec3 direction, float fade, int reflections)
 {
+    if (fade <= FADE_LIMIT || reflections > 10)
+    {
+        return {0.0, 0.0, 0.0};
+    }
+
+
+
     Ray pixelRay(origin, direction);
     RayCollision collision = pixelRay.castRay(myScene);
 
@@ -67,13 +71,42 @@ vec3 getColor(vec3 origin, vec3 direction)
 //        cout << "Collided with sphere at: " << collision.collidedSphere.center.x << ", " << collision.collidedSphere.center.y;
 //        cout << ", " << collision.collidedSphere.center.z << endl;
         vec3 viewDir = direction.multiplyScalar(-1.0);
-        return shade(collision.collidedSphere, collision.pos, viewDir);
+        vec3 objNormal = collision.collidedSphere.getNormal(collision.pos);
+        //lets offset this collision so we dont get trapped inside an object.
+        //position += 0.01 * normal
+        collision.pos = collision.pos.add(objNormal.multiplyScalar(0.01));
+
+        bool inShadow = isInShadow(collision.pos);
+        //ReflectionDirection = ray direction + ( -2 *normal * dot(pixelRay.direction, normal))
+        vec3 reflectionDirection = pixelRay.direction.add(objNormal.multiplyScalar(
+                pixelRay.direction.dot(objNormal) * - 2.0f));
+
+        //collision.pos + 0.01 * reflectionDirection
+        vec3 offsetOrigin = collision.pos.add(reflectionDirection.multiplyScalar(0.01f));
+
+        vec3 reflectedColor = getColor(offsetOrigin, reflectionDirection,
+                                       fade * collision.collidedSphere.reflectivity, reflections + 1);
+
+        return shade(collision.collidedSphere, collision.pos, viewDir, inShadow, reflectedColor);
 
     }
     return myScene.backgroundColor;
 }
 
-//transpform the viewport coords to window ones
+//This function casts a ray towards the light source to determine if the point is in shadow
+bool isInShadow(vec3 point)
+{
+    Ray shadowRay(point, myScene.directionToLight);
+    //Offset the ray slightly so that we don't just collide with our object
+    //Math should be origin += 0.01 * direction
+    shadowRay.origin = shadowRay.origin.add(shadowRay.direction.multiplyScalar(0.01));
+    RayCollision collision = shadowRay.castRay(myScene);
+
+    //return if it has collided with something
+    return collision.hasCollision;
+}
+
+//transform the viewport coords to window ones
 void viewportToWindow(float windowPoint[], const int viewPoint[], const double winViewRatio[], const float halfWinSize[])
 {
     windowPoint[0] = float(((double)viewPoint[0] * winViewRatio[0]) - halfWinSize[0]);
@@ -96,8 +129,18 @@ vec3 windowToRelWorld(vec3 windowPointVec)
 }
 
 //this function applies the phong shading
-vec3 shade(sphere mySphere, vec3 position, vec3 viewDir)
+vec3 shade(sphere mySphere, vec3 position, vec3 viewDir, bool inShadow, vec3 reflectedColor)
 {
+    float shadowCoefficient;
+    if (inShadow)
+    {
+        shadowCoefficient = 0;
+    }
+    else
+    {
+        shadowCoefficient = 1;
+    }
+
     //get surface normal
     vec3 surfaceNormal = mySphere.getNormal(position);
     float normalDotLight = surfaceNormal.dot(myScene.directionToLight);
@@ -107,7 +150,7 @@ vec3 shade(sphere mySphere, vec3 position, vec3 viewDir)
     //viewdir dot lightReflectionDirection
     float viewDotLight = viewDir.dot(lightReflectionDirection);
 
-    //ambient lighting
+    //Ambient lighting
     vec3 ambient = myScene.ambientLight.multiplyVecs(mySphere.diffuseColor);
     ambient = ambient.multiplyScalar(mySphere.ambeintCoeff);
 
@@ -116,15 +159,20 @@ vec3 shade(sphere mySphere, vec3 position, vec3 viewDir)
     vec3 diffuse = myScene.lightColor.multiplyVecs(mySphere.diffuseColor)
             .multiplyScalar(max((float)0.0, normalDotLight));
     diffuse = diffuse.multiplyScalar(mySphere.diffuseCoeff);
+    diffuse = diffuse.multiplyScalar(shadowCoefficient);
 
     //Specular lighting
     //This equation is lightColor * obj.specularColor * (max of 0.0, and viewDotLight)^obj.glossCoeff
     vec3 specular = myScene.lightColor.multiplyVecs(mySphere.specularColor)
             .multiplyScalar(pow(max((float)0.0, viewDotLight),mySphere.glossCoeff));
     specular = specular.multiplyScalar(mySphere.specularCoeff);
+    specular = specular.multiplyScalar(shadowCoefficient);
 
-    //color = ambient + diffuse + specular
-    vec3 color = ambient.add(diffuse).add(specular);
+    //REFLECTIONS
+    vec3 reflectedObjColor = reflectedColor.multiplyScalar(mySphere.reflectivity);
+
+    //color = ambient + diffuse + specular + reflected
+    vec3 color = ambient.add(diffuse).add(specular).add(reflectedObjColor);
 
     //clip the dang values
     vec3 colorClipped = color.clip();

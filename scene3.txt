@@ -8,18 +8,6 @@ LightColor 1.0 1.0 1.0
 AmbientLight 0.1 0.1 0.1
 BackgroundColor 0.2 0.2 0.2
 
-
-# white sphere
-Sphere
-  Center 0.1 0.1 0.55
-  Radius 0.05
-  Kd 0.8
-  Ks 0.1
-  Ka 0.3
-  Od 1.0, 1.0, 1.0
-  Os 1.0, 1.0, 1.0
-  Kgls 1.0
-
 # red sphere
 Sphere
   Center 0.0 -0.2 0.4
@@ -30,6 +18,7 @@ Sphere
   Od 1.0 0.0 0.0
   Os 1.0 1.0 1.0
   Kgls 32.0
+  Refl 0.0
 
 # green sphere
 Sphere
@@ -41,6 +30,7 @@ Sphere
   Od 0.0 1.0 0.0
   Os 0.5 1.0 0.5
   Kgls 64.0
+  Refl 0.1
 
 
 # purple sphere
@@ -53,6 +43,7 @@ Sphere
     Od 1.0 0.0 1.0
     Os 1.0 1.0 1.0
     Kgls 16.0
+    Refl 0.9
 
 # orange sphere
 Sphere
@@ -64,6 +55,7 @@ Sphere
     Od 0.82, 0.25, 0.1
     Os 1.0, 1.0, 1.0
     Kgls 1.0
+    Refl 0.1
 
 # yellow sphere
 Sphere
@@ -75,6 +67,7 @@ Sphere
     Od 1.0, 1.0, 0.0
     Os 1.0, 1.0, 1.0
     Kgls 1.0
+    Refl 0.0
 
 # cyan sphere
 Sphere
@@ -86,3 +79,4 @@ Sphere
     Od 0.25, 1.0, 1.0
     Os 1.0, 1.0, 1.0
     Kgls 1.0
+    Refl 0.5
