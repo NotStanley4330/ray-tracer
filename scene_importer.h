@@ -21,37 +21,37 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
 
     //read in CameraLookAt
     fin >> garbage >> inOne >> inTwo >> inThree;
-    vec3 lookAt(stof(inOne), stof(inTwo), stof(inThree));
+    vec3 lookAt(stod(inOne), stod(inTwo), stod(inThree));
 
     //read in CameraLookFrom
     fin>> garbage >> inOne >> inTwo >> inThree;
-    vec3 lookFrom(stof(inOne), stof(inTwo), stof(inThree));
+    vec3 lookFrom(stod(inOne), stod(inTwo), stod(inThree));
 
     //read in CameraLookUp
     fin>> garbage >> inOne >> inTwo >> inThree;
-    vec3 lookUp(stof(inOne), stof(inTwo), stof(inThree));
+    vec3 lookUp(stod(inOne), stod(inTwo), stod(inThree));
 
     //read in FieldOfView
     fin>> garbage >> inOne;
-    float fov = stof(inOne);
+    float fov = stod(inOne);
 
     myCamera = camera(lookAt, lookFrom, lookUp, fov);
 
     //read in DirectionToLight
     fin >> garbage >> inOne >> inTwo >> inThree;
-    sceneInfo.directionToLight  = vec3(stof(inOne), stof(inTwo), stof(inThree));
+    sceneInfo.directionToLight  = vec3(stod(inOne), stod(inTwo), stod(inThree));
 
     //read in LightColor
     fin >> garbage >> inOne >> inTwo >> inThree;
-    sceneInfo.lightColor = vec3(stof(inOne), stof(inTwo), stof(inThree));
+    sceneInfo.lightColor = vec3(stod(inOne), stod(inTwo), stod(inThree));
 
     //read in AmbientLight
     fin >> garbage >> inOne >> inTwo >> inThree;
-    sceneInfo.ambientLight = vec3(stof(inOne), stof(inTwo), stof(inThree));
+    sceneInfo.ambientLight = vec3(stod(inOne), stod(inTwo), stod(inThree));
 
     //read in BackgroundColor
     fin >> garbage >> inOne >> inTwo >> inThree;
-    sceneInfo.backgroundColor = vec3(stof(inOne), stof(inTwo), stof(inThree));
+    sceneInfo.backgroundColor = vec3(stod(inOne), stod(inTwo), stod(inThree));
 
     //read in objects loop
     while(fin.peek() != EOF)
@@ -69,38 +69,38 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
             sphere inputSphere;
             //read in sphere center
             fin >> garbage >> inOne >> inTwo >> inThree;
-            inputSphere.center = vec3(stof(inOne), stof(inTwo), stof(inThree));
+            inputSphere.center = vec3(stod(inOne), stod(inTwo), stod(inThree));
 
             //read in radius
             fin >> garbage >> inOne;
-            inputSphere.radius = stof(inOne);
+            inputSphere.radius = stod(inOne);
 
             //read in Kd
             fin >> garbage >> inOne;
-            inputSphere.diffuseCoeff = stof(inOne);
+            inputSphere.diffuseCoeff = stod(inOne);
 
             //read in Ks
             fin >> garbage >> inOne;
-            inputSphere.specularCoeff = stof(inOne);
+            inputSphere.specularCoeff = stod(inOne);
 
             //read in Ka
             fin >> garbage >> inOne;
-            inputSphere.ambeintCoeff = stof(inOne);
+            inputSphere.ambeintCoeff = stod(inOne);
 
             //read in Od
             fin >> garbage >> inOne >> inTwo >> inThree;
-            inputSphere.diffuseColor = vec3(stof(inOne), stof(inTwo), stof(inThree));
+            inputSphere.diffuseColor = vec3(stod(inOne), stod(inTwo), stod(inThree));
 
             //read in Od
             fin >> garbage >> inOne >> inTwo >> inThree;
-            inputSphere.specularColor = vec3(stof(inOne), stof(inTwo), stof(inThree));
+            inputSphere.specularColor = vec3(stod(inOne), stod(inTwo), stod(inThree));
 
             //read in Kgls
             fin >> garbage >> inOne;
-            inputSphere.glossCoeff = stof(inOne) * (float)0.1;
+            inputSphere.glossCoeff = stod(inOne) * (float)0.1;
 
             fin >> garbage >> inOne;
-            inputSphere.reflectivity = stof(inOne);
+            inputSphere.reflectivity = stod(inOne);
 
             sceneInfo.addSphere(inputSphere);
 

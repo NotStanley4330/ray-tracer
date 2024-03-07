@@ -9,9 +9,9 @@
 class vec3
 {
 public:
-    float x;
-    float y;
-    float z;
+    double x;
+    double y;
+    double z;
 
     //Create a vec3 with empty values
     vec3()
@@ -22,7 +22,7 @@ public:
     }
 
     //create a vec 3 with values
-    vec3(float xIn, float yIn, float zIn)
+    vec3(double xIn, double yIn, double zIn)
     {
         x = xIn;
         y = yIn;
@@ -30,20 +30,20 @@ public:
     }
 
     //this function simply returns the dot product of this vector with another one
-    float dot(vec3 other)
+    double dot(vec3 other)
     {
-        return (float)((x * other.x) + (y * other.y) + (z * other.z));
+        return ((x * other.x) + (y * other.y) + (z * other.z));
     }
 
     //returns the scalar length of the vector
-    float magnitude()
+    double magnitude()
     {
         vec3 copy = *this;
-        return sqrtf(dot(copy));
+        return sqrt(dot(copy));
     }
 
     //returns a version of this vector with each element divided by a floating point value
-    vec3 divide(float divisor)
+    vec3 divide(double divisor)
     {
         return {(x / divisor), (y / divisor), (z / divisor)};
     }
@@ -51,7 +51,7 @@ public:
     //returns a new vector pointing in the same direction but with length 1
     vec3 normalized()
     {
-        float mag = magnitude();
+        double mag = magnitude();
         if (mag != 0)
         {
             return divide(mag);
@@ -66,15 +66,15 @@ public:
     vec3 cross(vec3 other)
     {
         //first, we need to do (this.y * other.z) - (this.z * other.y)
-        float xResult = (y * other.z) - (other.y * z);
+        double xResult = (y * other.z) - (other.y * z);
         //next, we need to do (this.x * other.z) - (this.z * other.x)
-        float yResult = (x * other.z) - (z * other.x);
+        double yResult = (x * other.z) - (z * other.x);
         //last, we need to do (this.x * other.y) - (this.y * other.x)
-        float zResult = (x * other.y) - (y * other.x);
+        double zResult = (x * other.y) - (y * other.x);
         return {xResult, yResult, zResult};
     }
 
-    vec3 multiplyScalar(float scalar)
+    vec3 multiplyScalar(double scalar)
     {
         return {x * scalar, y * scalar, z *scalar};
     }
@@ -89,6 +89,7 @@ public:
     {
         return{x * other.x, y * other.y, z * other.z};
     }
+
 
     //this functions serves to clip vec3 values to 0,1 for color output
     vec3 clip()
@@ -133,8 +134,8 @@ struct camera
 
     vec3 pos;
     vec3 relLookAt;
-    float focal_length;
-    float fov;
+    double focal_length;
+    double fov;
     vec3 forward;
     vec3 up;
     vec3 right;
@@ -167,7 +168,7 @@ struct camera
 
     }
 
-    camera(vec3 lookAtIn, vec3 lookFromIn, vec3 lookUpIn, float fovIn)
+    camera(vec3 lookAtIn, vec3 lookFromIn, vec3 lookUpIn, double fovIn)
     {
         fov = fovIn;
         //set pos as lookFrom
@@ -191,13 +192,13 @@ struct camera
 class object
 {
 public:
-    float diffuseCoeff;
-    float specularCoeff;
-    float ambeintCoeff;
+    double diffuseCoeff;
+    double specularCoeff;
+    double ambeintCoeff;
     vec3 diffuseColor;
     vec3 specularColor;
-    float glossCoeff;
-    float reflectivity;
+    double glossCoeff;
+    double reflectivity;
 
     virtual vec3 getNormal(vec3 point)
     {
@@ -208,20 +209,56 @@ public:
         isCollided = false;
         return {0.0,0.0,0.0};
     }
+
+    virtual vec3 getDiffuseColor()
+    {
+        return  diffuseColor;
+    }
+
+    virtual vec3 getSpecularColor()
+    {
+        return specularColor;
+    }
+    virtual double getDiffuseCoeff()
+    {
+        return diffuseCoeff;
+    }
+
+    virtual double getSpecularCoeff()
+    {
+        return specularCoeff;
+    }
+
+    virtual double getAmbeintCoeff()
+    {
+        return ambeintCoeff;
+    }
+
+    virtual double getGlossCoeff()
+    {
+        return glossCoeff;
+    }
+
+    virtual double getReflectivity()
+    {
+        return reflectivity;
+    }
+
+
 };
 
 class sphere : public object
 {
 public:
     vec3 center;
-    float radius;
-    float diffuseCoeff;
-    float specularCoeff;
-    float ambeintCoeff;
+    double radius;
+    double diffuseCoeff;
+    double specularCoeff;
+    double ambeintCoeff;
     vec3 diffuseColor;
     vec3 specularColor;
-    float glossCoeff;
-    float reflectivity;
+    double glossCoeff;
+    double reflectivity;
     sphere()
     {
         this->center = vec3(0.0,0.0,0.0);
@@ -236,8 +273,8 @@ public:
 
     }
 
-    sphere(vec3 centerIn, float radiusIn, float diffIn, float specIn, float ambIn, vec3 diffColorIn, vec3 specColorIn,
-           float glossIn, float reflectIn)
+    sphere(vec3 centerIn, double radiusIn, double diffIn, double specIn, double ambIn, vec3 diffColorIn, vec3 specColorIn,
+           double glossIn, double reflectIn)
     {
         this->center = centerIn;
         this->radius = radiusIn;
@@ -256,11 +293,46 @@ public:
         return diffPoints.normalized();
     }
 
+    vec3 getDiffuseColor() override
+    {
+        return diffuseColor;
+    }
+
+    vec3 getSpecularColor() override
+    {
+        return specularColor;
+    }
+
+    double getDiffuseCoeff() override
+    {
+        return diffuseCoeff;
+    }
+
+    double getSpecularCoeff() override
+    {
+        return specularCoeff;
+    }
+
+    double getAmbeintCoeff() override
+    {
+        return ambeintCoeff;
+    }
+
+    double getGlossCoeff() override
+    {
+        return glossCoeff;
+    }
+
+    double getReflectivity() override
+    {
+        return reflectivity;
+    }
+
     vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided) override
     {
         vec3 distance = SubtractVec3(center, rayOrigin);
-        float distSqr = distance.dot(distance);
-        float distMag = sqrtf(distSqr);
+        double distSqr = distance.dot(distance);
+        double distMag = sqrt(distSqr);
 
         bool outside = (distMag >= radius);
 
@@ -296,7 +368,7 @@ public:
 
         //set isCollided to true and return the collidedPosition
         isCollided = true;
-        return rayOrigin.add(rayDirection.multiplyScalar((float)t));
+        return rayOrigin.add(rayDirection.multiplyScalar(t));
 
 
 
@@ -311,13 +383,13 @@ class polygon
 {
 public:
     vec3 points[3];
-    float diffuseCoeff;
-    float specularCoeff;
-    float ambeintCoeff;
+    double diffuseCoeff;
+    double specularCoeff;
+    double ambeintCoeff;
     vec3 diffuseColor;
     vec3 specularColor;
-    float glossCoeff;
-    float reflectivity;
+    double glossCoeff;
+    double reflectivity;
 
     polygon()
     {
@@ -376,7 +448,7 @@ public:
     object* collidedSphere;
     vec3 rayOrigin;
     vec3 pos; //position of the collision
-    float distance; // the distance between the ray origin and this collision
+    double distance; // the distance between the ray origin and this collision
     bool hasCollision;//A bool to check if there is an actual collision associated
 
     RayCollision(object* inSphere, vec3 rayOrignIn, vec3 collidePos)

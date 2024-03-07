@@ -13,7 +13,7 @@ camera sceneCamera;
 scene myScene;
 using namespace std;
 void rayTraceAll(vec3** imageData, camera inputCamera, scene inputScene, int width, int height,
-                   double windowViewportRatio[], float halfWindowSize[])
+                   double windowViewportRatio[], double halfWindowSize[])
 {
     //import camera and scene
     sceneCamera = inputCamera;
@@ -32,12 +32,12 @@ void rayTraceAll(vec3** imageData, camera inputCamera, scene inputScene, int wid
 }
 
 //function retrieves the color for a single picture of the image
-vec3 rayTracePixel(int x, int y, double winViewRatio[], float halfWinSize[])
+vec3 rayTracePixel(int x, int y, double winViewRatio[], double halfWinSize[])
 {
     //first lets set an array as the point on the screen
     int viewPoint[2] = {x,y};
     //convert that point to a window point
-    float windowPoint[2] = {0.0, 0.0};
+    double windowPoint[2] = {0.0, 0.0};
     viewportToWindow(windowPoint, viewPoint, winViewRatio, halfWinSize);
     //need a 3d point for 3d space
     vec3 windowPointVec(windowPoint[0], (windowPoint[1]* -1), 0.0);
@@ -52,7 +52,7 @@ vec3 rayTracePixel(int x, int y, double winViewRatio[], float halfWinSize[])
 
 
 //this is the function that actually sends out the ray and returns the vec3 color value
-vec3 getColor(vec3 origin, vec3 direction, float fade, int reflections)
+vec3 getColor(vec3 origin, vec3 direction, double fade, int reflections)
 {
     if (fade <= FADE_LIMIT || reflections > 10)
     {
@@ -77,7 +77,6 @@ vec3 getColor(vec3 origin, vec3 direction, float fade, int reflections)
         collision.pos = collision.pos.add(objNormal.multiplyScalar(0.01));
 
         bool inShadow = isInShadow(collision.pos);
-        inShadow = false;
         //ReflectionDirection = ray direction + ( -2 *normal * dot(pixelRay.direction, normal))
         vec3 reflectionDirection = pixelRay.direction.add(objNormal.multiplyScalar(
                 pixelRay.direction.dot(objNormal) * - 2.0f));
@@ -86,7 +85,7 @@ vec3 getColor(vec3 origin, vec3 direction, float fade, int reflections)
         vec3 offsetOrigin = collision.pos.add(reflectionDirection.multiplyScalar(0.01f));
 
         vec3 reflectedColor = getColor(offsetOrigin, reflectionDirection,
-                                       fade * collision.collidedSphere->reflectivity, reflections + 1);
+                                       fade * collision.collidedSphere->getReflectivity(), reflections + 1);
 
         return shade(collision.collidedSphere, collision.pos, viewDir, inShadow, reflectedColor);
 
@@ -108,10 +107,10 @@ bool isInShadow(vec3 point)
 }
 
 //transform the viewport coords to window ones
-void viewportToWindow(float windowPoint[], const int viewPoint[], const double winViewRatio[], const float halfWinSize[])
+void viewportToWindow(double windowPoint[], const int viewPoint[], const double winViewRatio[], const double halfWinSize[])
 {
-    windowPoint[0] = float(((double)viewPoint[0] * winViewRatio[0]) - halfWinSize[0]);
-    windowPoint[1] = float(((double)viewPoint[1] * winViewRatio[1]) - halfWinSize[1]);
+    windowPoint[0] = ((viewPoint[0] * winViewRatio[0]) - halfWinSize[0]);
+    windowPoint[1] = ((viewPoint[1] * winViewRatio[1]) - halfWinSize[1]);
 }
 
 //this function transforms the window point to a relative world point
@@ -132,7 +131,9 @@ vec3 windowToRelWorld(vec3 windowPointVec)
 //this function applies the phong shading
 vec3 shade(object* mySphere, vec3 position, vec3 viewDir, bool inShadow, vec3 reflectedColor)
 {
-    float shadowCoefficient;
+
+
+    double shadowCoefficient;
     if (inShadow)
     {
         shadowCoefficient = 0;
@@ -144,33 +145,33 @@ vec3 shade(object* mySphere, vec3 position, vec3 viewDir, bool inShadow, vec3 re
 
     //get surface normal
     vec3 surfaceNormal = mySphere->getNormal(position);
-    float normalDotLight = surfaceNormal.dot(myScene.directionToLight);
+    double normalDotLight = surfaceNormal.dot(myScene.directionToLight);
     //This equation should be 2 * surfaceNormal * normalDotLight - directionToLight
     vec3 lightReflectionDirection = SubtractVec3(surfaceNormal.multiplyScalar(2).multiplyScalar(normalDotLight),
                                                  myScene.directionToLight);
     //viewdir dot lightReflectionDirection
-    float viewDotLight = viewDir.dot(lightReflectionDirection);
+    double viewDotLight = viewDir.dot(lightReflectionDirection);
 
     //Ambient lighting
-    vec3 ambient = myScene.ambientLight.multiplyVecs(mySphere->diffuseColor);
-    ambient = ambient.multiplyScalar(mySphere->ambeintCoeff);
+    vec3 ambient = myScene.ambientLight.multiplyVecs(mySphere->getDiffuseColor());
+    ambient = ambient.multiplyScalar(mySphere->getAmbeintCoeff());
 
     //Diffuse lighting
     //equation is lightColor * obj.diffuseColor * max of 0 and normalDotLight
-    vec3 diffuse = myScene.lightColor.multiplyVecs(mySphere->diffuseColor)
-            .multiplyScalar(max((float)0.0, normalDotLight));
-    diffuse = diffuse.multiplyScalar(mySphere->diffuseCoeff);
+    vec3 diffuse = myScene.lightColor.multiplyVecs(mySphere->getDiffuseColor())
+            .multiplyScalar(max(0.0, normalDotLight));
+    diffuse = diffuse.multiplyScalar(mySphere->getDiffuseCoeff());
     diffuse = diffuse.multiplyScalar(shadowCoefficient);
 
     //Specular lighting
     //This equation is lightColor * obj.specularColor * (max of 0.0, and viewDotLight)^obj.glossCoeff
-    vec3 specular = myScene.lightColor.multiplyVecs(mySphere->specularColor)
-            .multiplyScalar(pow(max((float)0.0, viewDotLight),mySphere->glossCoeff));
-    specular = specular.multiplyScalar(mySphere->specularCoeff);
+    vec3 specular = myScene.lightColor.multiplyVecs(mySphere->getSpecularColor())
+            .multiplyScalar(pow(max(0.0, viewDotLight),mySphere->getGlossCoeff()));
+    specular = specular.multiplyScalar(mySphere->getSpecularCoeff());
     specular = specular.multiplyScalar(shadowCoefficient);
 
     //REFLECTIONS
-    vec3 reflectedObjColor = reflectedColor.multiplyScalar(mySphere->reflectivity);
+    vec3 reflectedObjColor = reflectedColor.multiplyScalar(mySphere->getReflectivity());
 
     //color = ambient + diffuse + specular + reflected
     vec3 color = ambient.add(diffuse).add(specular).add(reflectedObjColor);
