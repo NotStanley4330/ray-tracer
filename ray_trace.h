@@ -7,16 +7,16 @@
 #ifndef RAY_TRACER_RAY_TRACE_H
 #define RAY_TRACER_RAY_TRACE_H
 
-void rayTraceAll(vec3**, camera, scene, int, int, double [], float[]);
+void rayTraceAll(vec3**, camera, scene, int, int, double [], double[]);
 
-vec3 rayTracePixel(int, int, double[], float[]);
+vec3 rayTracePixel(int, int, double[], double[]);
 
-void viewportToWindow(float[], const int [], const double[], const float[]);
+void viewportToWindow(double[], const int [], const double[], const double[]);
 
 vec3 windowToRelWorld(vec3);
 
-vec3 getColor(vec3, vec3, float, int);
-vec3 shade(sphere, vec3, vec3, bool, vec3);
+vec3 getColor(vec3, vec3, double, int);
+vec3 shade(object*, vec3, vec3, bool, vec3);
 
 bool isInShadow(vec3 point);
 

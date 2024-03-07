@@ -17,7 +17,7 @@ int width;
 int height;
 
 double DegreesToRadians(double);
-void CalculateWindowSize(int[], const int[], float, float);
+void CalculateWindowSize(int[], const int[], double, double);
 void CalculateWindowViewportRatio(const int[], const int[], double[]);
 
 using namespace std;
@@ -37,7 +37,7 @@ int main()
     CalculateWindowSize(windowSize, viewportSize, myCamera.focal_length, myCamera.fov);
     double windowViewportSizeRatio[2] = {0.0, 0.0};
     CalculateWindowViewportRatio(windowSize, viewportSize, windowViewportSizeRatio);
-    float halfWindowSize[2] = {(float)windowSize[0] / 2, (float)windowSize[1] / 2};
+    double halfWindowSize[2] = {(double)windowSize[0] / 2.0, (double)windowSize[1] / 2.0};
 
     //now we create an array to store all the color data and start ray tracing
     //we need to do this as a pointer for a proper 2d array to be passed arround
@@ -54,7 +54,7 @@ int main()
 }
 
 //this function is for calculating a window size array given camera properties
-void CalculateWindowSize(int windowSize[2], const int viewportSize[2], float focalLength, float fov)
+void CalculateWindowSize(int windowSize[2], const int viewportSize[2], double focalLength, double fov)
 {
     double fovDivided = fov / 2.0;
     double degToRad = DegreesToRadians(fovDivided);
