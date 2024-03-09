@@ -6,8 +6,8 @@
 
 
 
-#define DEFAULT_WIDTH 512;
-#define DEFAULT_HEIGHT 512;
+#define DEFAULT_WIDTH 1024;
+#define DEFAULT_HEIGHT 1024;
 #define DEFAULT_MAX_COLOR 255;
 
 camera myCamera;

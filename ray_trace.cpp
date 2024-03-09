@@ -146,6 +146,11 @@ vec3 shade(object* myObject, vec3 position, vec3 viewDir, bool inShadow, vec3 re
     //get surface normal
     vec3 surfaceNormal = myObject->getNormal(position);
     double normalDotLight = surfaceNormal.dot(myScene.directionToLight);
+    if (normalDotLight < 0)
+    {
+        surfaceNormal = surfaceNormal.multiplyScalar(-1);
+        normalDotLight = surfaceNormal.dot(myScene.directionToLight);
+    }
 
 
     //This equation should be 2 * surfaceNormal * normalDotLight - directionToLight
