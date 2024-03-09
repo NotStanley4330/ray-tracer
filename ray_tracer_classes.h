@@ -513,7 +513,7 @@ public:
 
         vec3 edge0 = (SubtractVec3(points[1],points[0]));
         vec3 edge1 = SubtractVec3(points[2], points[1]);
-        vec3 edge2 = SubtractVec3(points[0], points[1]);
+        vec3 edge2 = SubtractVec3(points[0], points[2]);
 
         vec3 c0 = SubtractVec3(planeCollision, points[0]);
         vec3 c1 = SubtractVec3(planeCollision, points[1]);
