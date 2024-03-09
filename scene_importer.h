@@ -12,7 +12,7 @@ using namespace std;
 void ImportScene(camera &myCamera, scene &sceneInfo)
 {
     fstream fin;
-    fin.open("C:\\Users\\starw\\CLionProjects\\ray_tracer\\scene3.txt", fstream::in);
+    fin.open("C:\\Users\\starw\\CLionProjects\\ray_tracer\\pt2_scene2.txt", fstream::in);
 
 
     //start reading in input, these are just throw away variables
@@ -97,12 +97,56 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
 
             //read in Kgls
             fin >> garbage >> inOne;
-            inputSphere.glossCoeff = stod(inOne) * (float)0.1;
+            inputSphere.glossCoeff = stod(inOne) * (float)0.3;
 
             fin >> garbage >> inOne;
             inputSphere.reflectivity = stod(inOne);
 
             sceneInfo.addSphere(inputSphere);
+
+        }
+        else if (objType == "Triangle")
+        {
+            polygon inputPolygon;
+
+            //read in points
+            fin >> inOne >> inTwo >> inThree;//point zero
+            inputPolygon.points[0] = vec3(stod(inOne), stod(inTwo), stod(inThree));
+            //point one
+            fin >> inOne >> inTwo >> inThree;
+            inputPolygon.points[1] = vec3(stod(inOne), stod(inTwo), stod(inThree));
+            fin >> inOne >> inTwo >> inThree;//point two
+            inputPolygon.points[2] = vec3(stod(inOne), stod(inTwo), stod(inThree));
+
+            //read in Kd
+            fin >> garbage >> inOne;
+            inputPolygon.diffuseCoeff = stod(inOne);
+
+            //read in Ks
+            fin >> garbage >> inOne;
+            inputPolygon.specularCoeff = stod(inOne);
+
+            //read in Ka
+            fin >> garbage >> inOne;
+            inputPolygon.ambeintCoeff = stod(inOne);
+
+            //read in Od
+            fin >> garbage >> inOne >> inTwo >> inThree;
+            inputPolygon.diffuseColor = vec3(stod(inOne), stod(inTwo), stod(inThree));
+
+            //read in Od
+            fin >> garbage >> inOne >> inTwo >> inThree;
+            inputPolygon.specularColor = vec3(stod(inOne), stod(inTwo), stod(inThree));
+
+            //read in Kgls
+            fin >> garbage >> inOne;
+            inputPolygon.glossCoeff = stod(inOne) * (float)0.3;
+
+            fin >> garbage >> inOne;
+            inputPolygon.reflectivity = stod(inOne);
+
+            inputPolygon.setPolygonPlane();
+            sceneInfo.addPolygon(inputPolygon);
 
         }
 

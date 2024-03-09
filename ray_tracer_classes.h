@@ -295,37 +295,37 @@ public:
 
     vec3 getDiffuseColor() override
     {
-        return diffuseColor;
+        return this->diffuseColor;
     }
 
     vec3 getSpecularColor() override
     {
-        return specularColor;
+        return this->specularColor;
     }
 
     double getDiffuseCoeff() override
     {
-        return diffuseCoeff;
+        return this->diffuseCoeff;
     }
 
     double getSpecularCoeff() override
     {
-        return specularCoeff;
+        return this->specularCoeff;
     }
 
     double getAmbeintCoeff() override
     {
-        return ambeintCoeff;
+        return this->ambeintCoeff;
     }
 
     double getGlossCoeff() override
     {
-        return glossCoeff;
+        return this->glossCoeff;
     }
 
     double getReflectivity() override
     {
-        return reflectivity;
+        return this->reflectivity;
     }
 
     vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided) override
@@ -369,17 +369,63 @@ public:
         //set isCollided to true and return the collidedPosition
         isCollided = true;
         return rayOrigin.add(rayDirection.multiplyScalar(t));
-
-
-
     }
-
-
-
-
 };
 
-class polygon
+class plane
+{
+public:
+    vec3 normal;
+    double distFromOrigin;
+
+    plane()
+    {
+        normal = {0.0,0.0,0.0};
+        distFromOrigin = -100000;
+    }
+
+    plane(vec3 inNormal, vec3 inPos)
+    {
+        normal = inNormal.normalized();
+        distFromOrigin = normal.dot(inPos) * -1.0;
+    }
+
+    vec3 getNormal()
+    {
+        return normal;
+    }
+
+    vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided)
+    {
+        //see if it even collides or the plane is parallel to the ray
+        double collide = normal.dot(rayDirection);
+
+        if (collide == 0)
+        {
+            //Ray is parallel to plane
+            isCollided = false;
+            return {0.0,0.0,0.0};
+        }
+
+        //vO = *dot(normal, origin) + distFromOrigin) * -1
+        double vO = (normal.dot(rayOrigin) + distFromOrigin) * -1.0;
+        double t = vO / collide;
+
+        if (t <= 0)
+        {
+            //Intersection is behind the screen
+            isCollided = false;
+            return {0.0,0.0,0.0};
+        }
+
+        //if we got this far there is a colliison in front of the camera
+        isCollided = true;
+        //return rayOrigin + rayDirection * t
+        return rayOrigin.add(rayDirection.multiplyScalar(t));
+    }
+};
+
+class polygon: public object
 {
 public:
     vec3 points[3];
@@ -390,27 +436,99 @@ public:
     vec3 specularColor;
     double glossCoeff;
     double reflectivity;
+    plane polygonPlane;
 
     polygon()
     {
         points[0] = vec3(0.0,0.0,0.0);
         points[1] = vec3(0.0,1.0,0.0);
         points[2] = vec3(1.0,0.0,0.0);
-        diffuseCoeff = 0.0;
-        specularCoeff = 0.0;
-        ambeintCoeff = 0.0;
-        diffuseColor = vec3(0.0, 0.0, 0.0);
-        specularColor = vec3(0.0, 0.0, 0.0);
-        glossCoeff = 0.0;
-        reflectivity = 0.0;
+        this->diffuseCoeff = 0.0;
+        this->specularCoeff = 0.0;
+        this->ambeintCoeff = 0.0;
+        this->diffuseColor = vec3(0.0, 0.0, 0.0);
+        this->specularColor = vec3(0.0, 0.0, 0.0);
+        this->glossCoeff = 0.0;
+        this->reflectivity = 0.0;
     }
 
-    vec3 getNormal(vec3 point)
+    vec3 getNormal(vec3 point) override
     {
         //we need to get two vectors of two sides and then take their cross products
-        vec3 vector1 = points[0].add(points[1].multiplyScalar(-1.0));
-        vec3 vector2 = points[1].add(points[2].multiplyScalar(-1));
-        return vector1.cross(vector2);
+        vec3 vector1 = SubtractVec3(points[1],points[0]);
+        vec3 vector2 = SubtractVec3(points[2],points[1]);
+        return vector1.cross(vector2).normalized();
+    }
+
+    void setPolygonPlane()
+    {
+        polygonPlane = plane(this->getNormal({0.0,0.0,0.0}), points[0]);
+    }
+
+    vec3 getDiffuseColor() override
+    {
+        return this->diffuseColor;
+    }
+
+    vec3 getSpecularColor() override
+    {
+        return this->specularColor;
+    }
+
+    double getDiffuseCoeff() override
+    {
+        return this->diffuseCoeff;
+    }
+
+    double getSpecularCoeff() override
+    {
+        return this->specularCoeff;
+    }
+
+    double getAmbeintCoeff() override
+    {
+        return this->ambeintCoeff;
+    }
+
+    double getGlossCoeff() override
+    {
+        return this->glossCoeff;
+    }
+
+    double getReflectivity() override
+    {
+        return this->reflectivity;
+    }
+
+    vec3 collideRay(vec3 rayOrigin, vec3 rayDirection, bool &isCollided) override
+    {
+        vec3 planeCollision = polygonPlane.collideRay(rayOrigin, rayDirection, isCollided);
+        if (!isCollided)
+        {
+            isCollided = false; //just to be sure
+            return {0.0,0.0,0.0};
+        }
+
+        vec3 edge0 = (SubtractVec3(points[1],points[0]));
+        vec3 edge1 = SubtractVec3(points[2], points[1]);
+        vec3 edge2 = SubtractVec3(points[0], points[1]);
+
+        vec3 c0 = SubtractVec3(planeCollision, points[0]);
+        vec3 c1 = SubtractVec3(planeCollision, points[1]);
+        vec3 c2 = SubtractVec3(planeCollision, points[2]);
+
+        vec3 normal = getNormal({0.0,0.0,0.0});
+        if (normal.dot(edge0.cross(c0)) > 0 &&normal.dot(edge1.cross(c1)) > 0 &&
+        normal.dot(edge2.cross(c2)) > 0)
+        {
+            isCollided = true;
+            return planeCollision;
+        }
+
+        isCollided = false;
+        return {0.0,0.0,0.0};
+
+
     }
 };
 
@@ -421,13 +539,13 @@ public:
     vec3 lightColor;
     vec3 ambientLight;
     vec3 backgroundColor;
-    object* sphereList[10];
-    int numSpheres;
+    object* sphereList[20];
+    int numObjects;
 
 
     scene()
     {
-        numSpheres = 0;
+        numObjects = 0;
         directionToLight = vec3(0.0,0.0,0.0);
         lightColor = vec3(0.0,0.0,0.0);
         ambientLight = vec3(0.0,0.0,0.0);
@@ -437,8 +555,14 @@ public:
     void addSphere(sphere inputSphere)
     {
         //set the sphere to given info and increment the number of spheres
-        sphereList[numSpheres] = new sphere(inputSphere);
-        numSpheres++;
+        sphereList[numObjects] = new sphere(inputSphere);
+        numObjects++;
+    }
+
+    void addPolygon(polygon inputPolygon)
+    {
+        sphereList[numObjects] = new polygon(inputPolygon);
+        numObjects++;
     }
 };
 
@@ -463,6 +587,7 @@ public:
 
     RayCollision()
     {
+        collidedSphere = new sphere();
         distance = 100000;
         hasCollision = false;
     }
@@ -483,7 +608,7 @@ public:
     RayCollision castRay(scene sceneInfo)
     {
         RayCollision closestCollide;
-        for (int x = 0; x < sceneInfo.numSpheres; x++)
+        for (int x = 0; x < sceneInfo.numObjects; x++)
         {
             //create a bool to check if we really collide with the sphere and do the collision detection
             bool collided = false;

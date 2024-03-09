@@ -8,7 +8,7 @@
 using namespace std;
 void outputToFile(vec3** colorData, int width, int height, int maxColors)
 {
-    ofstream outfile("C:\\Users\\starw\\CLionProjects\\ray_tracer\\scene3_reflective_output.ppm");
+    ofstream outfile("C:\\Users\\starw\\CLionProjects\\ray_tracer\\pt2s2_output.ppm");
 
     outfile << "P3\n" << width << " " << height << "\n255\n";
 
