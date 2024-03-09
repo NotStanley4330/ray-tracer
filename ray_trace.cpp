@@ -99,7 +99,7 @@ bool isInShadow(vec3 point)
     Ray shadowRay(point, myScene.directionToLight);
     //Offset the ray slightly so that we don't just collide with our object
     //Math should be origin += 0.01 * direction
-    shadowRay.origin = shadowRay.origin.add(shadowRay.direction.multiplyScalar(0.01));
+    shadowRay.origin = shadowRay.origin.add(shadowRay.direction.multiplyScalar(0.03));
     RayCollision collision = shadowRay.castRay(myScene);
 
     //return if it has collided with something
@@ -146,6 +146,8 @@ vec3 shade(object* myObject, vec3 position, vec3 viewDir, bool inShadow, vec3 re
     //get surface normal
     vec3 surfaceNormal = myObject->getNormal(position);
     double normalDotLight = surfaceNormal.dot(myScene.directionToLight);
+
+
     //This equation should be 2 * surfaceNormal * normalDotLight - directionToLight
     vec3 lightReflectionDirection = SubtractVec3(surfaceNormal.multiplyScalar(2).multiplyScalar(normalDotLight),
                                                  myScene.directionToLight);

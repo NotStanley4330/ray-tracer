@@ -107,7 +107,7 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
         }
         else if (objType == "Triangle")
         {
-            polygon inputPolygon;
+            triangle inputPolygon;
 
             //read in points
             fin >> inOne >> inTwo >> inThree;//point zero
@@ -145,7 +145,7 @@ void ImportScene(camera &myCamera, scene &sceneInfo)
             fin >> garbage >> inOne;
             inputPolygon.reflectivity = stod(inOne);
 
-            inputPolygon.setPolygonPlane();
+            inputPolygon.setTrianglePlane();
             sceneInfo.addPolygon(inputPolygon);
 
         }

@@ -425,7 +425,7 @@ public:
     }
 };
 
-class polygon: public object
+class triangle: public object
 {
 public:
     vec3 points[3];
@@ -438,7 +438,7 @@ public:
     double reflectivity;
     plane polygonPlane;
 
-    polygon()
+    triangle()
     {
         points[0] = vec3(0.0,0.0,0.0);
         points[1] = vec3(0.0,1.0,0.0);
@@ -457,10 +457,12 @@ public:
         //we need to get two vectors of two sides and then take their cross products
         vec3 vector1 = SubtractVec3(points[1],points[0]);
         vec3 vector2 = SubtractVec3(points[2],points[1]);
-        return vector1.cross(vector2).normalized();
+
+        vec3 normal = vector1.cross(vector2).normalized();
+        return normal;
     }
 
-    void setPolygonPlane()
+    void setTrianglePlane()
     {
         polygonPlane = plane(this->getNormal({0.0,0.0,0.0}), points[0]);
     }
@@ -559,9 +561,9 @@ public:
         numObjects++;
     }
 
-    void addPolygon(polygon inputPolygon)
+    void addPolygon(triangle inputPolygon)
     {
-        sphereList[numObjects] = new polygon(inputPolygon);
+        sphereList[numObjects] = new triangle(inputPolygon);
         numObjects++;
     }
 };
